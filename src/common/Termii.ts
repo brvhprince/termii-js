@@ -6,6 +6,7 @@
  */
 import HttpClient from "../service/client";
 import Messaging from "../apps/Messaging";
+import Token from "../apps/Token";
 
 
 
@@ -16,7 +17,7 @@ class Termii extends HttpClient {
   protected sender_id: string
 
   public readonly messaging: Messaging;
-  // public readonly token: Token;
+  public readonly token: Token;
   constructor(api_key: string, sender_id: string) {
 
     super({
@@ -31,10 +32,10 @@ class Termii extends HttpClient {
     this.api_key = api_key;
     this.sender_id = sender_id.trim();
     this.messaging = new Messaging(this, this.api_key, this.sender_id);
-    // this.token = new Token(this.client, this.api_key);
+    this.token = new Token(this, this.api_key, this.sender_id);
   }
 
-  public setSenderId(sender_id: string): void
+  public set_sender_id(sender_id: string): void
   {
     this.sender_id = sender_id.trim()
   }

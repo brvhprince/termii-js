@@ -44,11 +44,6 @@ export interface Paginator2<T> {
 
 
 
-export interface Unauthorized {
-  message: string
-  error: Error
-}
-
 export interface PayloadResponse {
   code?: string
   message: string

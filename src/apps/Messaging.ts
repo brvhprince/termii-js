@@ -29,13 +29,10 @@ import {
   SendWithoutSenderIdPayload,
   UpdatePhonebook
 } from "../interface/messaging";
-import { PayloadResponse, QueryParams, Unauthorized } from "../interface/global";
-import { AxiosError } from "axios";
+import { PayloadResponse, QueryParams } from "../interface/global";
 import HttpClient from "../service/client";
 
 class Messaging {
-
-  private readonly message = "Messaging API Error";
 
   constructor(
     private readonly client: HttpClient,
@@ -43,8 +40,7 @@ class Messaging {
     private readonly sender_id: string
   ) {}
 
-  public async listSenderIds(page?:number): Promise<SenderIDs | Unauthorized> {
-    try {
+  public async list_sender_ids(page?:number): Promise<SenderIDs> {
 
       let params: QueryParams = {
         api_key: this.api_key,
@@ -56,17 +52,11 @@ class Messaging {
       });
 
 
-    }
-    catch (e) {
-      return {
-        message: this.message,
-        error: e as AxiosError
-      }
-    }
+
   }
 
-  public async requestSenderId(payload: RequestSenderIdOptions): Promise<PayloadResponse | Unauthorized> {
-    try {
+  public async request_sender_id(payload: RequestSenderIdOptions): Promise<PayloadResponse> {
+
       const requestPayload: RequestSenderIdPayload = {
         api_key: this.api_key,
         ...payload
@@ -74,19 +64,11 @@ class Messaging {
 
       return await this.client.post<PayloadResponse>("sender-id/request", requestPayload)
 
-    }
-    catch (e) {
-      return {
-        message: this.message,
-        error: e as AxiosError
-      }
-    }
-
   }
 
-  public async send(payload: SendMessageOptions): Promise<SendMessageResponse | Unauthorized>
+  public async send(payload: SendMessageOptions): Promise<SendMessageResponse>
   {
-    try {
+
       const requestPayload: SendMessagePayload = {
         api_key: this.api_key,
         from: this.sender_id,
@@ -97,17 +79,11 @@ class Messaging {
       }
 
       return await this.client.post<SendMessageResponse>("sms/send", requestPayload)
-    }
-    catch (e) {
-      return {
-        message: this.message,
-        error: e as AxiosError
-      }
-    }
+
   }
-  public async sendBulk(payload: SendBulkMessageOptions): Promise<SendMessageResponse | Unauthorized>
+  public async send_bulk(payload: SendBulkMessageOptions): Promise<SendMessageResponse>
   {
-    try {
+
       const requestPayload: SendBulkMessagePayload = {
         api_key: this.api_key,
         from: this.sender_id,
@@ -118,51 +94,32 @@ class Messaging {
       }
 
       return await this.client.post<SendMessageResponse>("sms/send/bulk", requestPayload)
-    }
-    catch (e) {
-      return {
-        message: this.message,
-        error: e as AxiosError
-      }
-    }
+
+
   }
-  public async sendWithoutSenderId(payload: SendWithoutSenderId): Promise<SendMessageResponse | Unauthorized>
+  public async send_without_sender_id(payload: SendWithoutSenderId): Promise<SendMessageResponse>
   {
-    try {
       const requestPayload: SendWithoutSenderIdPayload = {
         api_key: this.api_key,
         ...payload
       }
 
       return await this.client.post<SendMessageResponse>("sms/number/send", requestPayload)
-    }
-    catch (e) {
-      return {
-        message: this.message,
-        error: e as AxiosError
-      }
-    }
+
   }
-  public async sendWithTemplate(payload: SendTemplateOptions): Promise<SendMessageResponse[] | Unauthorized>
+  public async send_with_template(payload: SendTemplateOptions): Promise<SendMessageResponse[]>
   {
-    try {
+
       const requestPayload: SendTemplatePayload = {
         api_key: this.api_key,
         ...payload
       }
 
       return await this.client.post<SendMessageResponse[]>("send/template", requestPayload)
-    }
-    catch (e) {
-      return {
-        message: this.message,
-        error: e as AxiosError
-      }
-    }
+
   }
 
-  public async listPhonebooks(page?:number): Promise<Phonebooks | Unauthorized> {
-    try {
+  public async list_phonebooks(page?:number): Promise<Phonebooks> {
 
       let params: QueryParams = {
         api_key: this.api_key,
@@ -174,71 +131,44 @@ class Messaging {
       });
 
 
-    }
-    catch (e) {
-      return {
-        message: this.message,
-        error: e as AxiosError
-      }
-    }
   }
 
 
-  public async createPhonebook(payload: CreatePhonebook): Promise<PayloadResponse | Unauthorized>
+  public async create_phonebook(payload: CreatePhonebook): Promise<PayloadResponse>
   {
-    try {
+
       const requestPayload: AddPhonebook = {
         api_key: this.api_key,
         ...payload
       }
 
       return await this.client.post<PayloadResponse>("phonebooks", requestPayload)
-    }
-    catch (e) {
-      return {
-        message: this.message,
-        error: e as AxiosError
-      }
-    }
+
   }
-  public async updatePhonebook(id: string, name: string): Promise<PayloadResponse | Unauthorized>
+  public async update_phonebook(id: string, name: string): Promise<PayloadResponse>
   {
-    try {
+
       const requestPayload: UpdatePhonebook = {
         api_key: this.api_key,
         phonebook_name:  name
       }
 
       return await this.client.patch<PayloadResponse>(`phonebooks/${id}`, requestPayload)
-    }
-    catch (e) {
-      return {
-        message: this.message,
-        error: e as AxiosError
-      }
-    }
+
   }
-  public async deletePhonebook(phonebook_id: string): Promise<PayloadResponse | Unauthorized>
+  public async delete_phonebook(phonebook_id: string): Promise<PayloadResponse>
   {
-    try {
 
       return await this.client.delete<PayloadResponse>(`phonebooks/${phonebook_id}`, {
         params: {
           api_key: this.api_key
         }
       })
-    }
-    catch (e) {
-      return {
-        message: this.message,
-        error: e as AxiosError
-      }
-    }
+
   }
 
 
-  public async listContacts(phonebook_id: string | number, page?:number): Promise<Contacts | Unauthorized> {
-    try {
+  public async list_contacts(phonebook_id: string | number, page?:number): Promise<Contacts> {
 
       let params: QueryParams = {
         api_key: this.api_key,
@@ -249,55 +179,33 @@ class Messaging {
         params
       });
 
-
-    }
-    catch (e) {
-      return {
-        message: this.message,
-        error: e as AxiosError
-      }
-    }
   }
 
-  public async createContact(phonebook_id: string, payload: CreateContact): Promise<ContactResponse | Unauthorized>
+  public async create_contact(phonebook_id: string, payload: CreateContact): Promise<ContactResponse>
   {
-    try {
+
       const requestPayload: AddContact = {
         api_key: this.api_key,
         ...payload
       }
 
       return await this.client.post<ContactResponse>(`phonebooks/${phonebook_id}/contacts`, requestPayload)
-    }
-    catch (e) {
-      return {
-        message: this.message,
-        error: e as AxiosError
-      }
-    }
+
   }
 
-  public async deleteContact(contact_id: string|number): Promise<PayloadResponse | Unauthorized>
+  public async delete_contact(contact_id: string|number): Promise<PayloadResponse>
   {
-    try {
 
       return await this.client.delete<PayloadResponse>(`phonebook/contact/${contact_id}`, {
         params: {
           api_key: this.api_key
         }
       })
-    }
-    catch (e) {
-      return {
-        message: this.message,
-        error: e as AxiosError
-      }
-    }
+
   }
 
-  public async sendCampaign(payload: SendCampaignOptions): Promise<PayloadResponse | Unauthorized>
+  public async send_campaign(payload: SendCampaignOptions): Promise<PayloadResponse>
   {
-    try {
       const requestPayload: SendCampaignPayload = {
         api_key: this.api_key,
         sender_id: this.sender_id,
@@ -308,18 +216,11 @@ class Messaging {
       }
 
       return await this.client.post<PayloadResponse>("sms/campaigns/send", requestPayload)
-    }
-    catch (e) {
-      return {
-        message: this.message,
-        error: e as AxiosError
-      }
-    }
+
   }
 
 
-  public async listCampaigns(page?:number): Promise<Campaigns | Unauthorized> {
-    try {
+  public async list_campaigns(page?:number): Promise<Campaigns> {
 
       let params: QueryParams = {
         api_key: this.api_key,
@@ -330,18 +231,9 @@ class Messaging {
         params
       });
 
-
-    }
-    catch (e) {
-      return {
-        message: this.message,
-        error: e as AxiosError
-      }
-    }
   }
 
-  public async getCampaignHistory(campaign_id:string): Promise<CampaignHistory | Unauthorized> {
-    try {
+  public async get_campaign_history(campaign_id:string): Promise<CampaignHistory> {
 
       let params: QueryParams = {
         api_key: this.api_key
@@ -351,14 +243,6 @@ class Messaging {
         params
       });
 
-
-    }
-    catch (e) {
-      return {
-        message: this.message,
-        error: e as AxiosError
-      }
-    }
   }
 
 }
