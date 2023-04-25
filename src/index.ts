@@ -5,5 +5,4 @@
  *   Copyright termii-js
  */
 
-
 import "common/index";

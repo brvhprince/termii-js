@@ -5,5 +5,5 @@
  *   Copyright termii-js
  */
 
-export * as Termii from "./Termii"
-export * as Webhook from "./Webhook"
+export * as Termii from "./Termii";
+export * as Webhook from "./Webhook";

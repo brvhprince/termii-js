@@ -6,69 +6,61 @@
  */
 import HttpClient from "../service/client";
 import {
-  Balance, InboxHistory,
+  Balance,
+  InboxHistory,
   SearchQueryParams,
   SearchResponse,
   StatusQueryParams,
-  StatusQueryPayload, StatusResponse
+  StatusQueryPayload,
+  StatusResponse,
 } from "../interface/insights";
 import { QueryParams } from "../interface/global";
 class Insights {
-
   constructor(
     private readonly client: HttpClient,
     private readonly api_key: string,
-    private readonly sender_id: string
+    private readonly sender_id: string,
   ) {}
 
-
   public async balance(): Promise<Balance> {
-
-    let params: QueryParams = {
-      api_key: this.api_key
+    const params: QueryParams = {
+      api_key: this.api_key,
     };
 
     return await this.client.get<Balance>("get-balance", {
-      params
+      params,
     });
-
   }
   public async search_phone_number(phone_number: string): Promise<SearchResponse> {
-
-    let params: SearchQueryParams = {
+    const params: SearchQueryParams = {
       api_key: this.api_key,
-      phone_number
+      phone_number,
     };
 
     return await this.client.get<SearchResponse>("check/dnd", {
-      params
+      params,
     });
-
   }
   public async status_phone_number(payload: StatusQueryParams): Promise<StatusResponse> {
-
-    let params: StatusQueryPayload = {
+    const params: StatusQueryPayload = {
       api_key: this.api_key,
       country_code: "GH",
-      ...payload
+      ...payload,
     };
 
     return await this.client.get<StatusResponse>("insight/number/query", {
-      params
+      params,
     });
-
   }
   public async history(): Promise<InboxHistory> {
-
-    let params: QueryParams = {
+    const params: QueryParams = {
       api_key: this.api_key,
     };
 
     return await this.client.get<InboxHistory>("sms/inbox", {
-      params
+      params,
     });
-
   }
 }
 
-export default Insights
+export default Insights;

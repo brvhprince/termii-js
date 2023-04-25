@@ -9,27 +9,23 @@ import Messaging from "../apps/Messaging";
 import Token from "../apps/Token";
 import Insights from "../apps/Insights";
 
-
-
 class Termii extends HttpClient {
-  private static readonly base_url = "https://api.ng.termii.com/api/"
+  private static readonly base_url = "https://api.ng.termii.com/api/";
 
-  protected readonly api_key: string
-  protected sender_id: string
+  protected readonly api_key: string;
+  protected sender_id: string;
 
   public readonly messaging: Messaging;
   public readonly token: Token;
   public readonly insights: Insights;
   constructor(api_key: string, sender_id: string) {
-
     super({
       baseURL: Termii.base_url,
       headers: {
         "Content-Type": "application/json",
-        Accept: "application/json"
-      }
-    })
-
+        Accept: "application/json",
+      },
+    });
 
     this.api_key = api_key;
     this.sender_id = sender_id.trim();
@@ -38,12 +34,9 @@ class Termii extends HttpClient {
     this.insights = new Insights(this, this.api_key, this.sender_id);
   }
 
-  public set_sender_id(sender_id: string): void
-  {
-    this.sender_id = sender_id.trim()
+  public set_sender_id(sender_id: string): void {
+    this.sender_id = sender_id.trim();
   }
-
 }
 
-
-export default Termii
+export default Termii;
