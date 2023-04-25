@@ -5,5 +5,5 @@
  *   Copyright termii-js
  */
 
-
-import "common/index";
+export * as Termii from "./Termii"
+export * as Webhook from "./Webhook"
