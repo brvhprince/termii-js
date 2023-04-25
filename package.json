@@ -1,0 +1,45 @@
+{
+  "name": "termii-js",
+  "version": "1.0.0",
+  "description": "JavaScript SDK for Termii Provider",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brvhprince/termii-js.git"
+  },
+  "author": "brvhprince <prince.akomea.stu@uenr.edu.gh>",
+  "homepage": "https://github.com/brvhprince/termii-js#readme",
+  "license": "ISC",
+  "private": false,
+  "scripts": {
+    "build": "tsc",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+    "lint": "tslint -p tsconfig.json",
+    "test": "jest --config jestconfig.json",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm test && npm run lint",
+    "preversion": "npm run lint",
+    "version": "npm run format && git add -A src",
+    "postversion": "git push && git push --tags"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/brvhprince/termii-js/issues"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.1",
+    "jest": "^29.5.0",
+    "prettier": "^2.8.8",
+    "ts-jest": "^29.1.0",
+    "tslint": "^6.1.3",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^5.0.4"
+  },
+  "files": [
+    "lib/**/*"
+  ],
+  "dependencies": {
+    "axios": "^1.3.6"
+  }
+}
