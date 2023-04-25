@@ -54,6 +54,10 @@ export interface KeyValuePair {
 }
 
 export interface QueryParams {
+  /**
+   * Page number to return results for
+   */
   page?: number
+  /** Your API key (It can be found on your [Termii Dashboard]{@link https://accounts.termii.com/#/}). */
   api_key: string
 }
