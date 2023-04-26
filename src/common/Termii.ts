@@ -37,6 +37,7 @@ class Termii extends HttpClient {
   public set_sender_id(sender_id: string): void {
     this.sender_id = sender_id.trim();
   }
+
 }
 
 export default Termii;

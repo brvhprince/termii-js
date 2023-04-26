@@ -31,3 +31,5 @@ class Webhook {
   public on = this.emitter.on;
   public off = this.emitter.off;
 }
+
+export default Webhook;
