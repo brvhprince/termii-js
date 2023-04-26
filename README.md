@@ -11,7 +11,6 @@ You need to create a [Termii account](https://accounts.termii.com/#/register), i
 to get your API Key, and Secret key.
 
 
-X5dhQ!M,74&^m,#
 ## Table of contents
 
 - [Termii NodeJs Library](#Termii-NodeJs-Library)
