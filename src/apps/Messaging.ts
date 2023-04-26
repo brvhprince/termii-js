@@ -60,7 +60,6 @@ class Messaging {
 
     return await this.client.post<PayloadResponse>("sender-id/request", requestPayload);
   }
-
   public async send(payload: SendMessageOptions): Promise<SendMessageResponse> {
     const requestPayload: SendMessagePayload = {
       api_key: this.api_key,
@@ -187,9 +186,10 @@ class Messaging {
     });
   }
 
-  public async get_campaign_history(campaign_id: string): Promise<CampaignHistory> {
+  public async get_campaign_history(campaign_id: string, page?: number): Promise<CampaignHistory> {
     const params: QueryParams = {
       api_key: this.api_key,
+      page
     };
 
     return await this.client.get<CampaignHistory>(`sms/campaigns/${campaign_id}`, {

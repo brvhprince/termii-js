@@ -34,7 +34,7 @@ class Token {
     private readonly sender_id: string,
   ) {}
 
-  public async send_token({ pin_placeholder, message_type, ...rest }: SendTokenOptions): Promise<TokenResponse> {
+  public async send_token({ pin_placeholder, message_type, message_text, ...rest }: SendTokenOptions): Promise<TokenResponse> {
     const requestPayload: SendTokenPayload = {
       api_key: this.api_key,
       from: this.sender_id,
@@ -44,6 +44,7 @@ class Token {
       pin_length: 4,
       pin_time_to_live: 3,
       pin_placeholder: pin_placeholder ? `< ${pin_placeholder} >` : "< 1234 >",
+      message_text: pin_placeholder ? `${message_text} < ${pin_placeholder} >` : `${message_text} < 1234 >`,
       pin_type: message_type ? message_type : MessageType.NUMERIC,
       ...rest,
     };

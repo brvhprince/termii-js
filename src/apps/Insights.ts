@@ -52,12 +52,12 @@ class Insights {
       params,
     });
   }
-  public async history(): Promise<InboxHistory> {
+  public async history(): Promise<InboxHistory[]> {
     const params: QueryParams = {
       api_key: this.api_key,
     };
 
-    return await this.client.get<InboxHistory>("sms/inbox", {
+    return await this.client.get<InboxHistory[]>("sms/inbox", {
       params,
     });
   }
