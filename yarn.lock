@@ -590,9 +590,9 @@
     "@babel/types" "^7.0.0"
 
 "@types/babel__traverse@*", "@types/babel__traverse@^7.0.6":
-  version "7.18.3"
-  resolved "https://registry.yarnpkg.com/@types/babel__traverse/-/babel__traverse-7.18.3.tgz#dfc508a85781e5698d5b33443416b6268c4b3e8d"
-  integrity sha512-1kbcJ40lLB7MHsj39U4Sh1uTd2E7rLEa79kmDpI6cy+XiXsteB3POdQomoq4FxszMrO3ZYchkhYJw7A2862b3w==
+  version "7.18.5"
+  resolved "https://registry.yarnpkg.com/@types/babel__traverse/-/babel__traverse-7.18.5.tgz#c107216842905afafd3b6e774f6f935da6f5db80"
+  integrity sha512-enCvTL8m/EHS/zIvJno9nE+ndYPh1/oNFzRYRmtUqJICG2VnCSBzMLW5VN2KCQU91f23tsNKR8v7VJJQMatl7Q==
   dependencies:
     "@babel/types" "^7.3.0"
 
@@ -631,9 +631,9 @@
     pretty-format "^29.0.0"
 
 "@types/node@*":
-  version "18.16.0"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.16.0.tgz#4668bc392bb6938637b47e98b1f2ed5426f33316"
-  integrity sha512-BsAaKhB+7X+H4GnSjGhJG9Qi8Tw+inU9nJDwmD5CgOmBLEI6ArdhikpLX7DjbjDRDTbqZzU2LSQNZg8WGPiSZQ==
+  version "18.16.1"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.16.1.tgz#5db121e9c5352925bb1f1b892c4ae620e3526799"
+  integrity sha512-DZxSZWXxFfOlx7k7Rv4LAyiMroaxa3Ly/7OOzZO8cBNho0YzAi4qlbrx8W27JGqG57IgR/6J7r+nOJWw6kcvZA==
 
 "@types/prettier@^2.1.5":
   version "2.7.2"
@@ -1000,9 +1000,9 @@ diff@^4.0.1:
   integrity sha512-58lmxKSA4BNyLz+HHMUzlOEpg09FV+ev6ZMe3vJihgdxzgcwZ8VoEEPmALCZG9LmqfVoNMMKpttIYTVG6uDY7A==
 
 electron-to-chromium@^1.4.284:
-  version "1.4.371"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.371.tgz#393983ef087268a20c926a89be30e9f0bfc803b0"
-  integrity sha512-jlBzY4tFcJaiUjzhRTCWAqRvTO/fWzjA3Bls0mykzGZ7zvcMP7h05W6UcgzfT9Ca1SW2xyKDOFRyI0pQeRNZGw==
+  version "1.4.372"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.372.tgz#7888ac92ccb9556627c3a37eba3b89ee5ac345f8"
+  integrity sha512-MrlFq/j+TYHOjeWsWGYfzevc25HNeJdsF6qaLFrqBTRWZQtWkb1myq/Q2veLWezVaa5OcSZ99CFwTT4aF4Mung==
 
 emittery@^0.13.1:
   version "0.13.1"
