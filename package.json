@@ -24,7 +24,7 @@
     "version": "npm run format && git add -A src",
     "postversion": "git push && git push --tags"
   },
-  "keywords": [],
+  "keywords": ["termii", "nodejs", "sms", "sdk", "messaging", "otp", "verification", "verify", "message", "token"],
   "bugs": {
     "url": "https://github.com/brvhprince/termii-js/issues"
   },
