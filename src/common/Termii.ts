@@ -10,10 +10,10 @@ import Token from "../apps/Token";
 import Insights from "../apps/Insights";
 
 class Termii extends HttpClient {
-  private static readonly base_url = "https://api.ng.termii.com/api/";
+  static readonly base_url = "https://api.ng.termii.com/api/";
 
-  protected readonly api_key: string;
-  protected sender_id: string;
+  readonly api_key: string;
+  sender_id: string;
 
   public readonly messaging: Messaging;
   public readonly token: Token;
@@ -37,7 +37,6 @@ class Termii extends HttpClient {
   public set_sender_id(sender_id: string): void {
     this.sender_id = sender_id.trim();
   }
-
 }
 
 export default Termii;

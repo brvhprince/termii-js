@@ -34,7 +34,12 @@ class Token {
     private readonly sender_id: string,
   ) {}
 
-  public async send_token({ pin_placeholder, message_type, message_text, ...rest }: SendTokenOptions): Promise<TokenResponse> {
+  public async send_token({
+    pin_placeholder,
+    message_type,
+    message_text,
+    ...rest
+  }: SendTokenOptions): Promise<TokenResponse> {
     const requestPayload: SendTokenPayload = {
       api_key: this.api_key,
       from: this.sender_id,

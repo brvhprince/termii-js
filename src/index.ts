@@ -5,7 +5,7 @@
  *   Copyright termii-js
  */
 
-import  Termii from "./common/Termii";
+import Termii from "./common/Termii";
 import Webhook from "./common/Webhook";
 
-export { Termii, Webhook }
+export { Termii, Webhook };

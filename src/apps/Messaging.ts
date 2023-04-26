@@ -189,7 +189,7 @@ class Messaging {
   public async get_campaign_history(campaign_id: string, page?: number): Promise<CampaignHistory> {
     const params: QueryParams = {
       api_key: this.api_key,
-      page
+      page,
     };
 
     return await this.client.get<CampaignHistory>(`sms/campaigns/${campaign_id}`, {
