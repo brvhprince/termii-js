@@ -10,7 +10,6 @@ import Token from "../apps/Token";
 import Insights from "../apps/Insights";
 
 class Termii extends HttpClient {
-  static readonly base_url = "https://api.ng.termii.com/api/";
 
   readonly api_key: string;
   sender_id: string;
@@ -20,7 +19,7 @@ class Termii extends HttpClient {
   public readonly insights: Insights;
   constructor(api_key: string, sender_id: string) {
     super({
-      baseURL: Termii.base_url,
+      baseURL: "https://api.ng.termii.com/api/",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
@@ -36,6 +35,10 @@ class Termii extends HttpClient {
 
   public set_sender_id(sender_id: string): void {
     this.sender_id = sender_id.trim();
+  }
+
+  public set_base_url(base_url: string): void {
+    this.client.defaults.baseURL = base_url;
   }
 }
 

@@ -6,29 +6,28 @@
  */
 
 import Termii from "../src/common/Termii";
-import HttpClient from "../src/service/client";
 import Messaging from "../src/apps/Messaging";
 import Token from "../src/apps/Token";
 import Insights from "../src/apps/Insights";
 
-jest.mock("../src/service/client");
+// jest.mock("../src/service/client", () => {
+//   return jest.fn().mockImplementation(() => {
+//     return {
+//       client: {
+//         defaults: {
+//           baseURL: "https://api.ng.termii.com/api/"
+//         }
+//       }
+//     };
+//   });
+// });
 
 describe("Termii class", () => {
   const api_key = "your_api_key";
   const sender_id = "your_sender_id";
-  const options = {
-    baseURL: Termii.base_url,
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
-  }
-
   let termii: Termii;
-  let http: HttpClient;
 
   beforeEach(() => {
-    http = new HttpClient(options);
     termii = new Termii(api_key, sender_id);
   });
 
@@ -54,6 +53,14 @@ describe("Termii class", () => {
       const new_sender_id = "   new_sender_id   ";
       termii.set_sender_id(new_sender_id);
       expect(termii.sender_id).toBe(new_sender_id.trim());
+    });
+  });
+
+  describe('set_base_url method', () => {
+    it('should set the baseURL of the client correctly', () => {
+      const new_base_url = 'https://new.api.ng.termii.com/api/';
+      termii.set_base_url(new_base_url);
+      expect(termii.client.defaults.baseURL).toBe(new_base_url);
     });
   });
 });

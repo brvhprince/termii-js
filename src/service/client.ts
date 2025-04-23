@@ -7,7 +7,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 
 class HttpClient {
-  private readonly client: AxiosInstance;
+  public client: AxiosInstance;
 
   constructor(config: AxiosRequestConfig) {
     this.client = axios.create(config);
