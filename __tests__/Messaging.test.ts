@@ -11,7 +11,7 @@ import {
   type CreatePhonebook,
   MessagingChannels,
   type Phonebooks,
-  type RequestSenderIdPayload,
+  type RequestSenderIdOptions,
   type SendBulkMessageOptions,
   type SendEmailOptions,
   type SenderIDs,
@@ -37,6 +37,10 @@ describe("Messaging", () => {
   const apiKey = "test-api-key";
   const senderId = "test-sender-id";
   const messaging = new Messaging(client, apiKey, senderId);
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
 
   const sort = { empty: true, sorted: false, unsorted: true };
   const emptyPage = <T>(content: T[] = []): Page<T> => ({
@@ -91,11 +95,10 @@ describe("Messaging", () => {
 
   describe("request_sender_id", () => {
     it("should return PayloadResponse", async () => {
-      const payload: RequestSenderIdPayload = {
+      const payload: RequestSenderIdOptions = {
         sender_id: "test-sender-id",
         company: "Test Company",
         usecase: "For sending Promotional Messages",
-        api_key: apiKey,
       };
 
       const expected: PayloadResponse = {
@@ -108,7 +111,18 @@ describe("Messaging", () => {
       const result = await messaging.request_sender_id(payload);
 
       expect(result).toEqual(expected);
-      expect(client.post).toHaveBeenCalledWith("sender-id/request", payload);
+      // the API accepts the use case as use_case and reports it missing otherwise,
+      // despite naming the field useCase in its own error message
+      expect(client.post).toHaveBeenCalledWith("sender-id/request", {
+        api_key: apiKey,
+        sender_id: payload.sender_id,
+        company: payload.company,
+        use_case: payload.usecase,
+      });
+      expect(client.post).not.toHaveBeenCalledWith(
+        "sender-id/request",
+        expect.objectContaining({ usecase: expect.anything() }),
+      );
 
       postSpy.mockRestore();
     });
@@ -376,7 +390,13 @@ describe("Messaging", () => {
       expect(url).toBe("phonebooks/contacts/upload");
       expect(config?.headers?.["Content-Type"]).toBeUndefined();
       expect(form).toBeInstanceOf(FormData);
-      expect(JSON.parse((form as FormData).get("contact") as string)).toEqual({
+
+      // the contact part is a typed blob, not a plain field: the API binds it by
+      // content type and reports it missing when it arrives untyped
+      const contact = (form as FormData).get("contact") as Blob;
+      expect(contact).toBeInstanceOf(Blob);
+      expect(contact.type).toBe("application/json");
+      expect(JSON.parse(await contact.text())).toEqual({
         pid: "phonebook_id",
         country_code: "234",
         api_key: apiKey,

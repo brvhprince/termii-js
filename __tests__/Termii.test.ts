@@ -63,4 +63,27 @@ describe("Termii class", () => {
       expect(termii.client.defaults.baseURL).toBe(new_base_url);
     });
   });
+
+  describe("v3 regressions", () => {
+    it("does not set a default Content-Type", () => {
+      // the v3 API returns 200 with an empty body when a GET carries
+      // Content-Type: application/json, which silently breaks every read
+      const t = new Termii("key", "sender");
+      expect(t.client.defaults.headers["Content-Type"]).toBeUndefined();
+      expect(t.client.defaults.headers.Accept).toBe("application/json");
+    });
+
+    it("propagates set_sender_id down to the apps", async () => {
+      const t = new Termii("key", "OldSender");
+      t.set_sender_id("NewSender");
+
+      const spy = jest.spyOn(t, "post").mockImplementationOnce(() => Promise.resolve({} as never));
+      await t.messaging.send({ to: "1", sms: "x" });
+
+      // the apps hold their own copy, so a stale value here means sends go out
+      // under the sender ID captured at construction
+      expect((spy.mock.calls[0][1] as { from: string }).from).toBe("NewSender");
+      spy.mockRestore();
+    });
+  });
 });

@@ -38,9 +38,18 @@ export interface RequestSenderIdOptions {
   company: string;
 }
 
-export interface RequestSenderIdPayload extends RequestSenderIdOptions {
+/**
+ * <p> The wire format for a sender ID request. </p>
+ * <p> The API reads the use case from <b>use_case</b> on the way in, but returns
+ * it as <b>usecase</b> on the way out, so the field is renamed here rather than
+ * in the public options. </p>
+ * <p> Note: a rejected request reports the field as <b>useCase</b> in its error
+ * message, which is the server's internal name and not the accepted key. </p>
+ */
+export interface RequestSenderIdPayload extends Omit<RequestSenderIdOptions, "usecase"> {
   /** Your API key (It can be found on your [Termii Dashboard]{@link https://accounts.termii.com/#/}). */
   api_key: string;
+  use_case: string;
 }
 
 export enum MessagingChannels {

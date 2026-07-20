@@ -7,6 +7,26 @@ response types — see **Breaking changes** before upgrading.
 
 ### Fixed
 
+- **Every GET request returned an empty body.** The client set
+  `Content-Type: application/json` as an instance default, applying it to reads
+  as well as writes. The v3 API answers a GET carrying that header with `200`,
+  no content-type, and an empty body — so `balance`, `history`,
+  `list_phonebooks`, `list_sender_ids`, `list_campaigns`, `list_contacts`,
+  `search_phone_number` and `status_phone_number` all silently resolved to `""`.
+  The header is now set per-request by axios only when there is a body.
+- **`set_sender_id` had no effect on sends.** `Messaging` and `Token` captured
+  the sender ID at construction and held it as `readonly`, so the setter updated
+  only the `Termii` instance. Sends kept using the original ID. The value is now
+  pushed down to both apps.
+- **`request_sender_id` was rejected by the API.** The use case was sent as
+  `usecase`; the endpoint reads `use_case` and rejected every request with
+  "Use case cannot be empty". The public option is still named `usecase`, to
+  match the field the API returns when listing sender IDs — the rename now
+  happens on the wire. Note the API's own error message calls the field
+  `useCase`, which is its internal name and is not accepted.
+- **`upload_contacts` was rejected by the API.** The `contact` part was appended
+  as a plain form field; the endpoint binds it by content type and reported it
+  missing. It is now sent as an `application/json` blob.
 - **Webhook signatures never verified.** `Webhook.middleware` read the
   `X-Termii-Signature` header with capitals, but Node lowercases incoming header
   names, so the comparison always failed and no event was ever emitted.

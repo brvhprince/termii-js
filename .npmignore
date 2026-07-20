@@ -3,9 +3,10 @@ __tests__
 tsconfig.json
 jestconfig.json
 biome.json
-notes.txt
+*.txt
 scripts
 .env
 .env.*
 *.pem
 *.key
+credentials*

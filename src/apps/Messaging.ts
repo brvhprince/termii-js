@@ -66,9 +66,13 @@ class Messaging {
   }
 
   public async request_sender_id(payload: RequestSenderIdOptions): Promise<PayloadResponse> {
+    const { usecase, ...rest } = payload;
+
     const requestPayload: RequestSenderIdPayload = {
       api_key: this.api_key,
-      ...payload,
+      // the API rejects the request as empty unless the use case arrives as use_case
+      use_case: usecase,
+      ...rest,
     };
 
     return await this.client.post<PayloadResponse>("sender-id/request", requestPayload);
