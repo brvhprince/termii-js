@@ -5,10 +5,10 @@
  *   Copyright termii-js
  */
 
-import Termii from "../src/common/Termii";
+import Insights from "../src/apps/Insights";
 import Messaging from "../src/apps/Messaging";
 import Token from "../src/apps/Token";
-import Insights from "../src/apps/Insights";
+import Termii from "../src/common/Termii";
 
 // jest.mock("../src/service/client", () => {
 //   return jest.fn().mockImplementation(() => {
@@ -56,9 +56,9 @@ describe("Termii class", () => {
     });
   });
 
-  describe('set_base_url method', () => {
-    it('should set the baseURL of the client correctly', () => {
-      const new_base_url = 'https://new.api.ng.termii.com/api/';
+  describe("set_base_url method", () => {
+    it("should set the baseURL of the client correctly", () => {
+      const new_base_url = "https://new.api.ng.termii.com/api/";
       termii.set_base_url(new_base_url);
       expect(termii.client.defaults.baseURL).toBe(new_base_url);
     });

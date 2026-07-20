@@ -5,12 +5,12 @@
  *   Copyright termii-js
  */
 
-export const enum MessageType {
+export enum MessageType {
   NUMERIC = "NUMERIC",
   ALPHANUMERIC = "ALPHANUMERIC",
 }
 
-export const enum MessagingChannels {
+export enum MessagingChannels {
   /**
    * This channel is used to send promotional messages and messages to phone number not on dnd
    */
@@ -104,8 +104,14 @@ export interface SendTokenPayload extends SendTokenOptions {
 
 export interface TokenResponse {
   pinId: string;
+  /** Snake-case form of <b>pinId</b>, returned alongside it by the v3 API. */
+  pin_id: string;
   to: string;
+  phone_number: string;
   smsStatus: string;
+  status: string;
+  /** String form of the message ID. See {@link SendMessageResponse.message_id_str}. */
+  message_id_str: string;
 }
 
 export interface SendVoiceTokenOptions {

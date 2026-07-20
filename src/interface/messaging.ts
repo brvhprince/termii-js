@@ -4,18 +4,27 @@
  *   Created by pennycodes on 25/04/2023.
  *   Copyright termii-js
  */
-import { KeyValuePair, Paginator, Paginator2 } from "./global";
+import type { KeyValuePair, Page } from "./global";
+
+export type SenderIdStatus = "active" | "pending" | "blocked";
 
 interface SenderID {
   sender_id: string;
-  status: "block" | "unblock";
+  status: SenderIdStatus;
   company: string | null;
   usecase: string | null;
   country: string | null;
-  created_at: string;
+  createdAt: string;
 }
 
-export interface SenderIDs extends Paginator<SenderID> {}
+export interface SenderIDs extends Page<SenderID> {}
+
+export interface SenderIdFilters {
+  /** Filter by sender ID name */
+  name?: string;
+  /** Filter by approval status */
+  status?: SenderIdStatus;
+}
 
 export interface RequestSenderIdOptions {
   /**
@@ -34,7 +43,7 @@ export interface RequestSenderIdPayload extends RequestSenderIdOptions {
   api_key: string;
 }
 
-export const enum MessagingChannels {
+export enum MessagingChannels {
   /**
    * This channel is used to send promotional messages and messages to phone number not on dnd
    */
@@ -47,7 +56,27 @@ export const enum MessagingChannels {
    * This channel sends messages via WhatsApp
    */
   WHATSAPP = "whatsapp",
+  /**
+   * This channel sends messages as a voice call
+   */
+  VOICE = "voice",
 }
+
+/**
+ * <p> Channels accepted by the bulk endpoint. </p>
+ * <p> Bulk delivery does not support WhatsApp or voice. </p>
+ */
+export type BulkMessagingChannel = MessagingChannels.DND | MessagingChannels.GENERIC;
+
+/**
+ * <p> The format a message is delivered in. </p>
+ */
+export type MessageType = "plain" | "unicode" | "encrypted" | "voice";
+
+/**
+ * <p> Formats accepted by the bulk endpoint, which cannot deliver voice. </p>
+ */
+export type BulkMessageType = Exclude<MessageType, "voice">;
 
 interface MediaOptions {
   /**
@@ -97,11 +126,11 @@ export interface SendMessageOptions {
   sms: string;
   /**
    * <p>The kind of message that is sent, which is a <b>plain</b> message</p>
-   * <h3> Default is <b> plain </b> </h3>
+   * <h3> Default is <b> plain </b>, or <b> voice </b> on the voice channel </h3>
    */
-  type?: string;
+  type?: MessageType;
   /**
-   * <p>This is the route through which the message is sent. It is either <b>dnd</b>, <b>whatsapp</b>, or <b>generic</b></p>
+   * <p>This is the route through which the message is sent. It is either <b>dnd</b>, <b>generic</b>, <b>whatsapp</b> or <b>voice</b></p>
    * <h3> Default is <b> generic </b> </h3>
    */
   channel?: MessagingChannels;
@@ -114,7 +143,7 @@ export interface SendMessageOptions {
 export interface SendMessagePayload extends SendMessageOptions {
   /** Your API key (It can be found on your [Termii Dashboard]{@link https://accounts.termii.com/#/}). */
   api_key: string;
-  type: string;
+  type: MessageType;
   channel: MessagingChannels;
   /**
    * <p>Represents a sender ID for sms which can be Alphanumeric or Device name for Whatsapp</p>
@@ -140,19 +169,20 @@ export interface SendBulkMessageOptions {
    * <p>The kind of message that is sent, which is a <b>plain</b> message</p>
    * <h3> Default is <b> plain </b> </h3>
    */
-  type?: string;
+  type?: BulkMessageType;
   /**
-   * <p>This is the route through which the message is sent. It is either <b>dnd</b>, <b>whatsapp</b>, or <b>generic</b></p>
+   * <p>This is the route through which the message is sent. It is either <b>dnd</b> or <b>generic</b></p>
+   * <p> Bulk delivery does not support WhatsApp or voice </p>
    * <h3> Default is <b> generic </b> </h3>
    */
-  channel?: MessagingChannels;
+  channel?: BulkMessagingChannel;
 }
 
 export interface SendBulkMessagePayload extends SendBulkMessageOptions {
   /** Your API key (It can be found on your [Termii Dashboard]{@link https://accounts.termii.com/#/}). */
   api_key: string;
-  type: string;
-  channel: MessagingChannels;
+  type: BulkMessageType;
+  channel: BulkMessagingChannel;
   /**
    * <p>Represents a sender ID for sms which can be Alphanumeric or Device name for Whatsapp</p>
    * <p>Alphanumeric sender ID length should be between 3 and 11 characters</p>
@@ -181,6 +211,12 @@ export interface SendWithoutSenderIdPayload extends SendWithoutSenderId {
 export interface SendMessageResponse {
   code: string;
   message_id: string;
+  /**
+   * <p> String form of <b>message_id</b>. </p>
+   * <p> Message IDs exceed <b>Number.MAX_SAFE_INTEGER</b>, so prefer this field
+   * anywhere the value may be parsed as a number. </p>
+   */
+  message_id_str: string;
   message: string;
   balance: number | string;
   user: string;
@@ -216,6 +252,69 @@ export interface SendTemplatePayload extends SendTemplateOptions {
   api_key: string;
 }
 
+export interface SendTemplateMediaOptions extends SendTemplateOptions {
+  /**
+   * <p> The media object attached to the template. Required for this endpoint. </p>
+   */
+  media: MediaOptions;
+}
+
+export interface SendTemplateMediaPayload extends SendTemplateMediaOptions {
+  /** Your API key (It can be found on your [Termii Dashboard]{@link https://accounts.termii.com/#/}). */
+  api_key: string;
+}
+
+export interface SendEmailOptions {
+  /**
+   * <p> The email address the notification is sent to </p>
+   * <b> (Example: test@termii.com) </b>
+   */
+  email: string;
+  /**
+   * <p> The subject line of the email </p>
+   */
+  subject: string;
+  /**
+   * <p> The email configuration used to deliver the message. </p>
+   * <p> It can be found on your [Termii dashboard]{@link https://accounts.termii.com/#/email-otp-config} </p>
+   */
+  email_configuration_id: string;
+  /**
+   * <p> The ID of the email template used </p>
+   */
+  template_id: string;
+  /**
+   * <p> Represents an object of <b>key: value</b> pairs substituted into the template </p>
+   */
+  variables: KeyValuePair;
+}
+
+export interface SendEmailPayload extends SendEmailOptions {
+  /** Your API key (It can be found on your [Termii Dashboard]{@link https://accounts.termii.com/#/}). */
+  api_key: string;
+}
+
+export interface UploadContacts {
+  /**
+   * <p> The CSV file contents </p>
+   * <b> (Example: new Blob([await fs.promises.readFile("contacts.csv")])) </b>
+   */
+  file: Blob;
+  /**
+   * <p> Name reported for the uploaded file. Defaults to <b>contacts.csv</b> </p>
+   */
+  filename?: string;
+  /**
+   * <p> ID of the phonebook the contacts are added to </p>
+   */
+  pid: string;
+  /**
+   * <p> Represents short numeric geographical codes developed to represent countries </p>
+   * <b> (Example: 234 ) </b>
+   */
+  country_code: string;
+}
+
 interface Phonebook {
   id: string;
   name: string;
@@ -224,7 +323,7 @@ interface Phonebook {
   last_updated: string;
 }
 
-export interface Phonebooks extends Paginator2<Phonebook> {}
+export interface Phonebooks extends Page<Phonebook> {}
 
 export interface CreatePhonebook {
   /**
@@ -249,22 +348,47 @@ export interface UpdatePhonebook {
    * <p> The name of the phonebook </p>
    */
   phonebook_name: string;
+  /**
+   * <p> A description of the contacts stored in the phonebook </p>
+   */
+  description?: string;
+}
+
+interface ContactKeyValue {
+  key: string;
+  value: string;
 }
 
 interface Contact {
   id: string | number;
   pid: string | number;
   phone_number: string;
-  email_address: string | null;
-  message: string | null;
-  company: string | null;
-  first_name: string | null;
-  last_name: string | null;
-  create_at: string | null;
-  updated_at: string | null;
+  /**
+   * <p> Contact attributes are returned as key/value pairs rather than fixed columns. </p>
+   * <p> Fields such as <b>first_name</b> or <b>email_address</b> appear here when set. </p>
+   */
+  contact_list_key_value: ContactKeyValue[];
 }
 
-export interface Contacts extends Paginator2<Contact> {}
+interface ContactPhonebook {
+  id: string | number;
+  applicationId: string | number;
+  description: string | null;
+  createdAt: string;
+  phonebook_name: string;
+  total_contact: number;
+  total_campaign: number;
+}
+
+/**
+ * <p> The contacts response nests its page under <b>data</b>, alongside the
+ * owning phonebook and the column headers, rather than being a page itself. </p>
+ */
+export interface Contacts {
+  headers: string[];
+  phonebook: ContactPhonebook;
+  data: Page<Contact>;
+}
 
 export interface CreateContact {
   /**
@@ -381,7 +505,7 @@ interface Campaign {
   created_at: string;
 }
 
-export interface Campaigns extends Paginator2<Campaign> {}
+export interface Campaigns extends Page<Campaign> {}
 
 interface History {
   id: number;
@@ -398,4 +522,4 @@ interface History {
   last_updated: string;
 }
 
-export interface CampaignHistory extends Paginator2<History> {}
+export interface CampaignHistory extends Page<History> {}

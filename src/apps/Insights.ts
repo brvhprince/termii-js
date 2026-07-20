@@ -4,8 +4,9 @@
  *   Created by pennycodes on 25/04/2023.
  *   Copyright termii-js
  */
-import HttpClient from "../service/client";
-import {
+
+import type { QueryParams } from "../interface/global";
+import type {
   Balance,
   InboxHistory,
   SearchQueryParams,
@@ -14,7 +15,8 @@ import {
   StatusQueryPayload,
   StatusResponse,
 } from "../interface/insights";
-import { QueryParams } from "../interface/global";
+import type HttpClient from "../service/client";
+
 class Insights {
   constructor(
     private readonly client: HttpClient,

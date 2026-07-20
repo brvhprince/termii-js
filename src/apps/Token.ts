@@ -4,35 +4,41 @@
  *   Created by pennycodes on 25/04/2023.
  *   Copyright termii-js
  */
-import HttpClient from "../service/client";
+
 import {
-  EmailResponse,
-  EmailTokenOptions,
-  EmailTokenPayload,
-  InAppResponse,
+  type EmailResponse,
+  type EmailTokenOptions,
+  type EmailTokenPayload,
+  type InAppResponse,
   MessageType,
   MessagingChannels,
-  SendInAppTokenOptions,
-  SendInAppTokenPayload,
-  SendTokenOptions,
-  SendTokenPayload,
-  SendVoiceCallOptions,
-  SendVoiceCallPayload,
-  SendVoiceTokenOptions,
-  SendVoiceTokenPayload,
-  TokenResponse,
-  VerifyResponse,
-  VerifyTokenOptions,
-  VerifyTokenPayload,
-  VoiceResponse,
+  type SendInAppTokenOptions,
+  type SendInAppTokenPayload,
+  type SendTokenOptions,
+  type SendTokenPayload,
+  type SendVoiceCallOptions,
+  type SendVoiceCallPayload,
+  type SendVoiceTokenOptions,
+  type SendVoiceTokenPayload,
+  type TokenResponse,
+  type VerifyResponse,
+  type VerifyTokenOptions,
+  type VerifyTokenPayload,
+  type VoiceResponse,
 } from "../interface/token";
+import type HttpClient from "../service/client";
 
 class Token {
   constructor(
     private readonly client: HttpClient,
     private readonly api_key: string,
-    private readonly sender_id: string,
+    private sender_id: string,
   ) {}
+
+  /** Updates the sender ID used for subsequent requests. */
+  public set_sender_id(sender_id: string): void {
+    this.sender_id = sender_id.trim();
+  }
 
   public async send_token({
     pin_placeholder,

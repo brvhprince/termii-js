@@ -1,4 +1,11 @@
 src
+__tests__
 tsconfig.json
-tslint.json
-.prettierrc
+jestconfig.json
+biome.json
+notes.txt
+scripts
+.env
+.env.*
+*.pem
+*.key

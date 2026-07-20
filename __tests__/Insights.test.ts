@@ -5,16 +5,17 @@
  *   Copyright termii-js
  */
 import Insights from "../src/apps/Insights";
-import HttpClient from "../src/service/client";
-import { QueryParams } from "../src/interface/global";
-import {
+import type { QueryParams } from "../src/interface/global";
+import type {
+  Balance,
   InboxHistory,
   SearchQueryParams,
-  Balance,
   SearchResponse,
   StatusQueryPayload,
-  StatusResponse
+  StatusResponse,
 } from "../src/interface/insights";
+import HttpClient from "../src/service/client";
+
 // Mock HttpClient to avoid actual API calls
 jest.mock("../src/service/client");
 
@@ -30,19 +31,17 @@ describe("Insights", () => {
     },
   };
 
-
   beforeEach(() => {
     client = new HttpClient(options) as jest.Mocked<HttpClient>;
-    insights = new Insights(client, 'API_KEY', 'SENDER_ID');
+    insights = new Insights(client, "API_KEY", "SENDER_ID");
   });
 
   describe("balance", () => {
     it("returns balance when called with valid params", async () => {
-
       const expectedBalance: Balance = {
         user: "Penny Codes",
         balance: 100.0,
-        currency: "USD"
+        currency: "USD",
       };
       client.get.mockResolvedValue(expectedBalance);
 
@@ -61,40 +60,39 @@ describe("Insights", () => {
 
   describe("search_phone_number", () => {
     it("returns search response when called with valid params", async () => {
-
       const phoneNumber = "1234567890";
       const expectedResponse: SearchResponse = {
-        network: "", network_code: "", number: "", status: ""
+        network: "",
+        network_code: "",
+        number: "",
+        status: "",
       };
 
       client.get.mockResolvedValue(expectedResponse);
 
       const searchResponse = await insights.search_phone_number(phoneNumber);
 
-
       const params: SearchQueryParams = {
         api_key: "API_KEY",
-        phone_number: phoneNumber
+        phone_number: phoneNumber,
       };
       expect(client.get).toHaveBeenCalledWith("check/dnd", {
         params,
       });
       expect(searchResponse).toEqual(expectedResponse);
-
     });
   });
 
   describe("status_phone_number", () => {
     it("returns status response when called with valid params", async () => {
-
       const expectedResponse: StatusResponse = {
-        result: []
+        result: [],
       };
 
       const queryParams: StatusQueryPayload = {
         phone_number: "1234567890",
         country_code: "GHS",
-        api_key: "API_KEY"
+        api_key: "API_KEY",
       };
 
       client.get.mockResolvedValue(expectedResponse);
@@ -110,8 +108,7 @@ describe("Insights", () => {
 
   describe("history", () => {
     it("returns inbox history when called with valid params", async () => {
-
-      const expectedInboxHistory: InboxHistory[] = []
+      const expectedInboxHistory: InboxHistory[] = [];
 
       client.get.mockResolvedValue(expectedInboxHistory);
 

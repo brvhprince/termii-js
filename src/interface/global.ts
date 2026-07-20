@@ -5,41 +5,38 @@
  *   Copyright termii-js
  */
 
-export interface Paginator<T> {
-  current_page: number;
-  data: T[];
-  first_page_url: string;
-  from: number;
-  last_page: number;
-  last_page_url: string;
-  next_page_url: string;
-  path: string;
-  per_page: number;
-  prev_page_url: string | null;
-  to: number;
-  total: number;
+export interface Sort {
+  empty: boolean;
+  sorted: boolean;
+  unsorted: boolean;
 }
 
-interface Links {
-  first: string;
-  last: string;
-  prev: string | null;
-  next: string | null;
+export interface Pageable {
+  sort: Sort;
+  offset: number;
+  pageNumber: number;
+  pageSize: number;
+  paged: boolean;
+  unpaged: boolean;
 }
 
-interface Meta {
-  current_page: number;
-  from: number;
-  last_page: number;
-  path: string;
-  per_page: number;
-  to: number;
-  total: number;
-}
-export interface Paginator2<T> {
-  data: T[];
-  links: Links;
-  meta: Meta;
+/**
+ * <p> Paginated response wrapper returned by the v3 API. </p>
+ * <p> Replaces the <b>Paginator</b> and <b>Paginator2</b> shapes used up to v2:
+ * results now live under <b>content</b> rather than <b>data</b>. </p>
+ */
+export interface Page<T> {
+  content: T[];
+  pageable: Pageable;
+  totalPages: number;
+  totalElements: number;
+  sort: Sort;
+  size: number;
+  number: number;
+  first: boolean;
+  last: boolean;
+  numberOfElements: number;
+  empty: boolean;
 }
 
 export interface PayloadResponse {
@@ -56,6 +53,10 @@ export interface QueryParams {
    * Page number to return results for
    */
   page?: number;
+  /**
+   * Number of results to return per page
+   */
+  size?: number;
   /** Your API key (It can be found on your [Termii Dashboard]{@link https://accounts.termii.com/#/}).
    */
   api_key: string;

@@ -4,7 +4,7 @@
  *   Created by pennycodes on 25/04/2023.
  *   Copyright termii-js
  */
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse } from "axios";
 
 class HttpClient {
   public client: AxiosInstance;
