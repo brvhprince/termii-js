@@ -16,7 +16,12 @@ class Webhook {
     this.secret_key = secret_key.trim();
   }
 
-  public middleware(request: any, response: any) {
+  /**
+   * <p> Express handler for incoming webhook events. </p>
+   * <p> Defined as a bound property so it can be passed directly to a route,
+   * as in <b>app.post(url, provider.middleware)</b>, without losing <b>this</b>. </p>
+   */
+  public middleware = (request: any, response: any): void => {
     response.sendStatus(200);
 
     // Node lowercases incoming header names
@@ -33,7 +38,7 @@ class Webhook {
       const { type, ...rest } = request.body;
       this.emitter.emit(type, rest);
     }
-  }
+  };
 
   private static matches(hash: string, signature: unknown): boolean {
     if (typeof signature !== "string" || signature.length !== hash.length) {

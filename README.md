@@ -15,17 +15,40 @@
 
 > A Node client library for consuming the  [Termii API](https://www.developers.termii.com/)
 
+## v3.0.0 — breaking changes
+
+This release targets the Termii **v3** API. If you are upgrading from 2.x, read
+the [CHANGELOG](CHANGELOG.md) first. The two changes that affect most code:
+
+**Paginated results moved from `data` to `content`.**
+
+```javascript
+// 2.x
+const { data } = await provider.messaging.list_phonebooks();
+
+// 3.x
+const { content, totalElements, totalPages } = await provider.messaging.list_phonebooks();
+```
+
+Affects `list_sender_ids`, `list_phonebooks`, `list_campaigns` and
+`get_campaign_history`. `list_contacts` nests its page one level deeper — see
+[Contacts](#contacts-documentation).
+
+**The default base URL is now `https://v3.api.termii.com/api/`.** Base URLs are
+account-specific; if yours differs, pass it as the third constructor argument.
+
 ## Prerequisites
 
-This project requires NodeJS (version 14 or later) and Yarn.
+This project requires NodeJS (version 18 or later) and Yarn.
+Version 18 is the floor because contact uploads use the global `FormData` and `Blob`.
 [Node](http://nodejs.org/) and [Yarn](https://yarnpkg.com/) are really easy to install.
 To make sure you have them available on your machine,
 try running the following command.
 
 ```sh
 $ yarn -v && node -v
-1.22.19
-v16.19.1
+1.22.22
+v22.18.0
 ```
 
 ## Table of contents
@@ -39,11 +62,12 @@ v16.19.1
         - [Import and Initialize](#import-and-initialize-the-library)
         - [Set Sender ID](#set-a-new-sender-id)
     - [Resources](#resources)
-        - [Messaging](#messaging)
-            - [Sender ID](#sender-id-documentation)
+        - [Messaging](#messaging-documentation)
+            - [Sender ID](#sender-id--documentation)
             - [Messages](#messages-documentation)
             - [Send Message Without Sender ID](#send-message-without-sender-id-documentation)
             - [Send Message With Template](#send-message-with-template-documentation)
+            - [Send Email Notification](#send-email-notification-documentation)
             - [Phonebooks](#phonebooks-documentation)
             - [Contacts](#contacts-documentation)
             - [Campaigns](#campaigns-documentation)
@@ -60,6 +84,7 @@ v16.19.1
           - [Phone Number Status](#status-documentation)
           - [Inbox History](#history-documentation)
         - [Express Middleware](#middleware)
+          - [Verifying Signatures](#verifying-signatures)
     - [Contributing](#contributing)
     - [Built With](#built-with)
     - [Versioning](#versioning)
@@ -105,6 +130,10 @@ const { Termii } = require("@brvhprince/termii-js");
 // Initialize
 
 const provider = new Termii("api_key_here", "sender_id");
+
+// Your account's base URL is shown on your Termii dashboard. Pass it as a third
+// argument when it differs from the default (https://v3.api.termii.com/api/).
+const custom = new Termii("api_key_here", "sender_id", "https://your.base.url/api/");
 ```
 
 ### Set a new Sender Id
@@ -138,9 +167,18 @@ A Sender ID is the name or number that identifies the sender of an SMS message
     // returns paginated results of 15 items per page
     const senderIds = await provider.messaging.list_sender_ids();
     
+    console.log(senderIds.content);       // the sender IDs
+    console.log(senderIds.totalElements); // total across all pages
+    
     // get page
     const nextSenderIds = await provider.messaging.list_sender_ids(2); 
+    
+    // filter by name and/or approval status
+    const active = await provider.messaging.list_sender_ids(1, { status: "active" });
     ```
+    
+    > A sender ID must be **approved** before it can send. Requesting one leaves it
+    > `pending`, and sending with a pending ID fails with a `404`.
 
 *   **Request a new sender Id**
     ```javascript
@@ -172,7 +210,24 @@ This API allows businesses send text messages to their customers across differen
     const response = await provider.messaging.send(payload);
     
     console.log(response.code) // ok 
+    console.log(response.message_id_str) // prefer this over message_id, which exceeds Number.MAX_SAFE_INTEGER
     ```
+    
+    The route defaults to `generic`. Pass `channel` to override it:
+    
+    ```javascript
+    import { MessagingChannels } from '@brvhprince/termii-js'
+    
+    await provider.messaging.send({
+      to: "233552345567",
+      sms: "Hello there",
+      channel: MessagingChannels.DND // dnd | generic | whatsapp | voice
+    });
+    ```
+    
+    > `MessagingChannels.VOICE` automatically sends `type: "voice"`, which the
+    > voice route requires.
+    
 *   **Send Bulk Message**
     ```javascript
     
@@ -185,6 +240,9 @@ This API allows businesses send text messages to their customers across differen
     
     console.log(response.code) // ok 
     ```
+    
+    > Bulk delivery supports only the `dnd` and `generic` channels, and cannot
+    > send `voice`. The types enforce this at compile time.
 
 ### Send Message Without Sender ID [Documentation](https://www.developers.termii.com/number)
 
@@ -224,6 +282,45 @@ const response = await provider.messaging.send_with_template(payload);
 console.log(response.code) // ok 
 ```
 
+Templates can also carry a media object. The `media` object is **required** on
+this endpoint, unlike `send_with_template`.
+
+```javascript
+
+const response = await provider.messaging.send_with_template_media({
+  phone_number: "233552345567",
+  device_id: "device_one",
+  template_id: "template_one",
+  data: { product_name: "Termii" },
+  media: {
+    url: "https://example.com/receipt.png",
+    caption: "Your receipt"
+  }
+});
+```
+
+### Send Email Notification [Documentation](https://developers.termii.com/email-product-notification)
+
+Deliver a product notification to a customer via email using a saved template.
+
+```javascript
+
+const payload = {
+  email: "customer@example.com",
+  subject: "Your order has shipped",
+  email_configuration_id: "email_configuration_id_from_dashboard",
+  template_id: "template_id",
+  variables: {
+    order_id: "1234",
+    customer_name: "Ada"
+  }
+}
+
+const response = await provider.messaging.send_email_notification(payload);
+
+console.log(response.code) // ok
+```
+
 ### Phonebooks [Documentation](https://www.developers.termii.com/phonebook)
 
 Create, view & manage phonebooks using these APIs. Each phonebook can be identified by a unique ID, which makes it easier to edit or delete a phonebook.
@@ -234,6 +331,8 @@ Create, view & manage phonebooks using these APIs. Each phonebook can be identif
     
    // returns paginated results of 15 items per page
     const phonebooks = await provider.messaging.list_phonebooks();
+  
+    console.log(phonebooks.content); // the phonebooks
   
      // get page
     const nextPhonebooks = await provider.messaging.list_phonebooks(2);
@@ -257,11 +356,12 @@ Create, view & manage phonebooks using these APIs. Each phonebook can be identif
 
     ```javascript
     
-    const payload =  {
-      phonebook_name: "Premium" 
-  }
-  
-    const response = await provider.messaging.update_phonebook("phonebook_id",payload);
+    // takes the id, the new name, and an optional description
+    const response = await provider.messaging.update_phonebook(
+      "phonebook_id",
+      "Premium",
+      "My premium leads"
+    );
   
     console.log(response.message) // Phonebook updated successfully
     ```
@@ -283,8 +383,12 @@ Contacts API allows you manage (i.e. edit, update, & delete) contacts in your ph
 
     ```javascript
     
-   // returns paginated results of 15 items per page
+   // the page is nested under `data`, alongside the owning phonebook
     const contacts = await provider.messaging.list_contacts("phonebook_id");
+  
+    console.log(contacts.data.content); // the contacts
+    console.log(contacts.phonebook);    // the phonebook they belong to
+    console.log(contacts.headers);      // column headers
   
      // get page
     const nextContacts = await provider.messaging.list_contacts("phonebook_id", 2);
@@ -303,6 +407,24 @@ Contacts API allows you manage (i.e. edit, update, & delete) contacts in your ph
   
     console.log(response.data.id) // 3647982
     ```
+  
+* **Upload Contacts from CSV**
+
+    ```javascript
+    import fs from "node:fs/promises";
+  
+    const response = await provider.messaging.upload_contacts({
+      file: new Blob([await fs.readFile("contacts.csv")]),
+      filename: "contacts.csv",
+      pid: "phonebook_id",
+      country_code: "233"
+    });
+  
+    console.log(response.message) // Your list is being uploaded in the background...
+    ```
+  
+    > The upload is processed asynchronously, so contacts do not appear in
+    > `list_contacts` immediately.
   
 * **Delete Contact**
 
@@ -323,6 +445,8 @@ Campaign API allows you to view, manage and send a campaign to a phonebook.
     
    // returns paginated results of 15 items per page
     const campaigns = await provider.messaging.list_campaigns();
+  
+    console.log(campaigns.content); // the campaigns
   
      // get page
     const nextCampaigns = await provider.messaging.list_campaigns(2);
@@ -354,6 +478,15 @@ Campaign API allows you to view, manage and send a campaign to a phonebook.
     const response = await provider.messaging.send_campaign(payload);
   
     console.log(response.message) // Your campaign has been scheduled
+    ```
+  
+* **Retry Campaign**
+
+    ```javascript
+    
+    const response = await provider.messaging.retry_campaign("campaign_id");
+  
+    console.log(response.message) // Campaign queued
     ```
 
 
@@ -553,6 +686,26 @@ provider.on("device_status", data => {
 app.post("/my/webhook/url", provider.middleware);
 
 ```
+
+### Verifying signatures
+
+Termii signs the **raw** request bytes. Re-serialising a parsed body can reorder
+keys and change whitespace, producing a hash that never matches. Capture the raw
+buffer so the middleware can verify against exactly what was signed:
+
+```javascript
+app.use(
+  express.json({
+    verify: (req, res, buf) => {
+      req.rawBody = buf;
+    },
+  })
+);
+```
+
+Without this the library falls back to `JSON.stringify(request.body)`, which only
+matches when key order happens to round-trip unchanged. Events whose signature
+does not verify are silently ignored.
 
 ## Contributing
 

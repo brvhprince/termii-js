@@ -51,4 +51,16 @@ describe("Webhook", () => {
     wh.middleware(req({}), res());
     expect(seen).toHaveLength(0);
   });
+
+  it("survives being passed as a bare express handler", () => {
+    const wh = new Webhook(SECRET);
+    const seen: any[] = [];
+    wh.on("inbound", (e: any) => seen.push(e));
+
+    // exactly how the README wires it: app.post(url, provider.middleware)
+    const handler = wh.middleware;
+    handler(req({ "x-termii-signature": sign(JSON.stringify(body)) }), res());
+
+    expect(seen).toHaveLength(1);
+  });
 });
